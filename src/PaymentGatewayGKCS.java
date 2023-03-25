@@ -33,7 +33,7 @@ class Transaction {
 
 class SuccessfulTransaction extends State {
     @Override
-    void notifyUsers(Account senderAccount, Account receiverAccount, state oldState) {
+    void notifyUsers(Account senderAccount, Account receiverAccount, State oldState) {
         if (oldState.name.equals(StateName.IN_PROGRESS)) {
             //notify sender, and receiver
         } else if (oldState.name.equals(StateName.ON_HOLD)) {
@@ -45,7 +45,7 @@ class SuccessfulTransaction extends State {
 class FailedTransaction extends State {
 
     @Override
-    void notifyUsers(Account senderAccount, Account receiverAccount, state oldState) {
+    void notifyUsers(Account senderAccount, Account receiverAccount, State oldState) {
         if (oldState.name.equals(StateName.IN_PROGRESS)) {
             //notify failed sender, and receiver
         } else if (oldState.name.equals(StateName.ON_HOLD)) {
@@ -64,7 +64,7 @@ class Amount {
 }
 
 abstract class State {
-    abstract void notifyUsers(Account senderAccount, Account receiverAccount, state oldState);
+    abstract void notifyUsers(Account senderAccount, Account receiverAccount, State oldState);
     StateName name;
     //successful, FAILED, IN_PROGRESS, ON_HOLD
 }
@@ -74,7 +74,7 @@ enum StateName {
 
 class RuleEngine {
     public void validate(Transaction t) {
-
+        return false;
     }
 
     public boolean isFraud(Transaction t) {
@@ -82,6 +82,30 @@ class RuleEngine {
     }
 }
 
+interface  Strategy {
+    StrategyName strategyName;
+    boolean validate(Transaction t);
+}
+
+enum StrategyName {
+    CASH, CROSS_COUNTRY, ONLINE
+}
+
+class CashStrategy implements Strategy {
+
+    @Override
+    public boolean validate(Transaction t) {
+        return t.amount <= 100;
+    }
+}
+
+class OnlineStrategy implements Strategy {
+
+    @Override
+    public boolean validate(Transaction t) {
+        return t.amount <= 10;
+    }
+}
 class Bank {
     String id;
     String name;
